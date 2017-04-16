@@ -1,0 +1,321 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <title>Scala.js</title>
+    <link rel="icon" href="data/scala-js-logo.svg"/>
+
+    <link rel="stylesheet" href="css/reveal.css">
+    <link rel="stylesheet" href="css/theme/moon.css">
+
+    <!-- Theme used for syntax highlighting of code -->
+    <link rel="stylesheet" href="lib/css/zenburn.css">
+
+    <!-- Printing and PDF exports -->
+    <script>
+        var link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.type = 'text/css';
+        link.href = window.location.search.match(/print-pdf/gi) ? 'css/print/pdf.css' : 'css/print/paper.css';
+        document.getElementsByTagName('head')[0].appendChild(link);
+    </script>
+</head>
+<body>
+<div class="reveal">
+    <div class="slides">
+        <section>
+            <img data-src="data/scala-js-logo.svg" alt="Scala.js" width="75%"
+                 style="border: none; background: none; box-shadow:none;">
+            <h3>Scala.js</h3>
+        </section>
+
+        <section>
+            <h3>Agenda</h3>
+            <ul>
+                <li>What's wrong with JS</li>
+                <li>What is Scala.js</li>
+                <li>Show me the code</li>
+                <li>Scala.js in RingCentral</li>
+            </ul>
+        </section>
+
+        <section>
+            <p>What's wrong with Javascript?</p>
+            <div class="fragment" data-fragment-index="1">
+                <img data-src="data/javascript-good-parts.jpg" alt="Javascript good parts" style="border: none;
+                margin: 0; background: none; box-shadow:none;">
+            </div>
+        </section>
+
+        <section>
+            <p>What's wrong with Javascript?</p>
+            <div class="fragment visible" data-fragment-index="1">
+            <pre><code data-trim data-noescape>
+                <span>> true + true = </span><span class="fragment visible" data-fragment-index="2">2</span>
+            </code></pre>
+            </div>
+
+            <div class="fragment" data-fragment-index="3">
+                <pre><code data-trim data-noescape>
+                    <span>> ["10", "10", "10", "10"].map(parseInt) = </span><span class="fragment visible" data-fragment-index="4">[10, NaN, 2, 3]</span>
+                </code></pre>
+            </div>
+
+            <div class="fragment" data-fragment-index="5" style="font-size: 32px;">JavaScript 4K demo competition! Build an amazing app with fewer than 4096 dependencies</div>
+
+            <div class="fragment" data-fragment-index="6">
+                <blockquote style="font-size: 32px;">&ldquo;4096 dependencies ought to be enough for everyone&ldquo; ~ Bill G.</blockquote>
+            </div>
+
+            <div class="fragment" data-fragment-index="7">...</div>
+        </section>
+
+        <section>
+            <h3>Everyone wants a better Javascript</h3>
+            <img data-src="data/compile-to-js.png" alt="Compile to JS" style="border: none; background: none; box-shadow:none;">
+        </section>
+
+        <section>
+            <h3>Why Scala.js?</h3>
+            <ul>
+                <li class="fragment" data-fragment-index="1">Strong types</li>
+                <li class="fragment" data-fragment-index="2">Expressive language</li>
+                <li class="fragment" data-fragment-index="3">Good JS interoperability</li>
+                <li class="fragment" data-fragment-index="4">One language for client/server</li>
+                <li class="fragment" data-fragment-index="5">Good IDE support</li>
+            </ul>
+        </section>
+
+        <section>
+            <h3>What is Scala.js?</h3>
+            <p class="fragment" data-fragment-index="1">Scala.js is a compiler that converts Scala code into the equivalent, executable Javascript</p>
+        </section>
+
+        <section>
+            <h3>Scala to js build</h3>
+            <img data-src="data/scala-to-js.png" alt="Scala to JS" style="border: none; background: none; box-shadow:none;">
+        </section>
+
+        <section>
+            <h3>Show me the code</h3>
+        </section>
+        <section>
+            <h3>Hello World</h3>
+            <pre class="fragment" data-fragment-index="1"><code class="scala" data-trim data-noescape>import scala.scalajs.js.JSApp
+
+object Main extends JSApp {
+  def main(): Unit = {
+    println("Hello world!")
+  }
+}</code></pre>
+        </section>
+
+        <section>
+            <h3>Ajax example</h3>
+            <div class="fragment" data-fragment-index="1">
+<pre><code class="scala">val xhr = new XMLHttpRequest()
+xhr.open("GET", url)
+xhr.onload = (_: dom.Event) => {
+  if (xhr.status == 200) {
+    element.innerHTML = xhr.responseText
+  }
+}
+xhr.send()
+</code></pre>
+
+            <p>or</p>
+
+<pre><code class="scala">Ajax.get(url).foreach { xhr =>
+  element.innerHTML = xhr.responseText
+}</code></pre>
+            </div>
+        </section>
+
+<!--        <section>
+            <h3>Web sockets</h3>
+            <pre><code class="scala">def websocket(button: html.Button, div: html.Div): Unit = {
+  val echo = "ws://echo.websocket.org"
+  val socket = new dom.WebSocket(echo)
+  socket.onmessage = {
+    (e: dom.MessageEvent) =>
+      div.innerHTML = e.data.toString
+  }
+
+  socket.onopen = { (_: dom.Event) =>
+    button.onclick = { (_: dom.Event) =>
+      socket.send(Random.nextInt(100).toString)
+    }
+  }
+}</code></pre>
+        </section>-->
+
+        <section>
+            <h3>Cross building</h3>
+            <pre class="fragment" data-fragment-index="1"><code class="scala" data-trim data-noescape style="max-height: none">
+lazy val root = project.in(file("."))
+  .aggregate(client, server).settings(...)
+
+lazy val app = crossProject.in(file(".")).
+  settings(
+    name := "scala-js-sample"
+  ).jvmSettings(
+    ...
+  ).jsSettings(
+    ...
+  )
+lazy val client = app.js.settings()
+lazy val server = app.jvm.settings()
+            </code></pre>
+            <pre class="fragment" data-fragment-index="2"><code data-trim data-noescape style="max-height: none">
+.
+ +- jvm
+ |   +- src/main/scala
+ +- js
+ |   +- src/main/scala
+ +- shared
+     +- src/main/scala
+            </code></pre>
+        </section>
+
+        <section>
+            <h3>Unit tests</h3>
+            <div class="fragment" data-fragment-index="1"><i>jsEnv</i></div>
+            <div class="fragment" data-fragment-index="2"><i>test framework</i></div>
+            <div class="fragment" data-fragment-index="3">
+                <pre><code class="scala">import org.scalajs.dom.document
+
+class SampleSpec extends FlatSpec with Matchers
+                    with BeforeAndAfterAll {
+
+  override protected def beforeAll(): Unit = Application.main()
+
+  "SampleSpec" should "check 'root' element" in {
+    Option(document.getElementById("root")) shouldBe defined
+  }
+}</code></pre>
+            </div>
+        </section>
+
+        <section>
+            <h3>Javascript interoperability</h3>
+        </section>
+
+        <section>
+            <h3>Types mapping</h3>
+            <ul>
+                <li>Primitive JS types</li>
+                <li>Arrays, functions, etc</li>
+                <li>js.Dynamic</li>
+            </ul>
+        </section>
+
+        <section>
+            <h3>Facades</h3>
+            <pre class="fragment" data-fragment-index="1"><code class="scala">@js.native
+trait JQuery extends js.Object {
+  def html(htmlString: String): JQuery = js.native
+  def html(): String = js.native
+  def height(): Double = js.native
+  def height(value: Double): JQuery = js.native
+  def width(): Double = js.native
+  def width(value: Double | String): JQuery = js.native
+  ...
+}</code></pre>
+        </section>
+
+<!--        <section>
+            <h3>Export objects</h3>
+            <pre><code class="scala" data-trim data-noescape>
+@JSExportTopLevel("my.app.HelloWorld")
+object HelloWorld {
+  override def toString: String = "Hello World!"
+}
+            </code></pre>
+            <pre><code class="javascript" data-trim data-noescape>
+console.log(my.app.HelloWorld.toString());
+            </code></pre>
+        </section>-->
+
+        <section>
+            <h3>Export</h3>
+            <div class="fragment" data-fragment-index="1">
+            <pre><code class="scala" data-trim data-noescape style="max-height: none">
+@JSExportTopLevel("js.Hello")
+class Hello(val x: Int) {
+
+  @JSExport
+  def square(): Int = x * x
+
+  @JSExport("add")
+  def addMe(y: Int): Int = x + y
+}
+            </code></pre>
+            <pre><code class="javascript" data-trim data-noescape style="max-height: none">
+var x = new js.Hello(5);
+console.log(x.square());
+console.log(x.add(10));
+            </code></pre>
+            </div>
+        </section>
+
+        <section>
+            <h3>Scala.js-defined JS classes</h3>
+            <pre class="fragment" data-fragment-index="1"><code class="scala">import scala.scalajs.js
+import js.annotation._
+
+@ScalaJSDefined
+class Foo extends js.Object {
+  val x: Int = 4
+  def bar(x: Int): Int = x + 1
+}</code></pre>
+        </section>
+
+        <section>
+            <h3>RingCentral experience</h3>
+        </section>
+
+        <section>
+            <h3>Luna</h3>
+            <img data-src="data/luna.png" alt="Luna" style="border: none; background: none; box-shadow:none;">
+        </section>
+
+        <section>
+            <h3>Qos</h3>
+            <img data-src="data/qos.png" alt="Qos" style="border: none; background: none; box-shadow:none;">
+        </section>
+
+        <section>
+            <h3>Dash-API</h3>
+        </section>
+
+        <section data-background-image="data/to_be_continued.jpg">
+        </section>
+
+    </div>
+</div>
+
+<script src="lib/js/head.min.js"></script>
+<script src="js/reveal.js"></script>
+
+<script>
+    // More info https://github.com/hakimel/reveal.js#configuration
+    Reveal.initialize({
+        history: true,
+
+        // More info https://github.com/hakimel/reveal.js#dependencies
+        dependencies: [
+            {src: 'plugin/markdown/marked.js'},
+            {src: 'plugin/markdown/markdown.js'},
+            {src: 'plugin/notes/notes.js', async: true},
+            {
+                src: 'plugin/highlight/highlight.js', async: true, callback: function () {
+                hljs.initHighlightingOnLoad();
+            }
+            }
+        ]
+    });
+</script>
+</body>
+</html>
