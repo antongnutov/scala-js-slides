@@ -44,23 +44,32 @@
         <section>
             <p>What's wrong with Javascript?</p>
             <div class="fragment" data-fragment-index="1">
-                <img data-src="data/javascript-good-parts.jpg" width="40%" alt="Javascript good parts" style="border: none;
+                <img data-src="data/javascript-good-parts.jpg" alt="Javascript good parts" style="border: none;
                 margin: 0; background: none; box-shadow:none;">
             </div>
+        </section>
 
-            <div class="fragment" data-fragment-index="2">
+        <section>
+            <p>What's wrong with Javascript?</p>
+            <div class="fragment visible" data-fragment-index="1">
+            <pre><code data-trim data-noescape>
+                <span>> true + true = </span><span class="fragment visible" data-fragment-index="2">2</span>
+            </code></pre>
+            </div>
+
+            <div class="fragment" data-fragment-index="3">
                 <pre><code data-trim data-noescape>
-                ["10", "10", "10", "10"].map(parseInt) // [10, NaN, 2, 3]
+                    <span>> ["10", "10", "10", "10"].map(parseInt) = </span><span class="fragment visible" data-fragment-index="4">[10, NaN, 2, 3]</span>
                 </code></pre>
             </div>
 
-            <div class="fragment" data-fragment-index="3" style="font-size: 32px;">JavaScript 4K demo competition! Build an amazing app with fewer than 4096 dependencies</div>
+            <div class="fragment" data-fragment-index="5" style="font-size: 32px;">JavaScript 4K demo competition! Build an amazing app with fewer than 4096 dependencies</div>
 
-            <div class="fragment" data-fragment-index="4">
+            <div class="fragment" data-fragment-index="6">
                 <blockquote style="font-size: 32px;">&ldquo;4096 dependencies ought to be enough for everyone&ldquo; ~ Bill G.</blockquote>
             </div>
 
-            <div class="fragment" data-fragment-index="5">...</div>
+            <div class="fragment" data-fragment-index="7">...</div>
         </section>
 
         <section>
@@ -81,7 +90,7 @@
 
         <section>
             <h3>What is Scala.js?</h3>
-            <p>Scala.js is a compiler that converts Scala code into the equivalent, executable Javascript</p>
+            <p class="fragment" data-fragment-index="1">Scala.js is a compiler that converts Scala code into the equivalent, executable Javascript</p>
         </section>
 
         <section>
@@ -90,8 +99,11 @@
         </section>
 
         <section>
+            <h3>Show me the code</h3>
+        </section>
+        <section>
             <h3>Hello World</h3>
-                <pre class="fragment" data-fragment-index="1"><code data-trim data-noescape>import scala.scalajs.js.JSApp
+            <pre class="fragment" data-fragment-index="1"><code class="scala" data-trim data-noescape>import scala.scalajs.js.JSApp
 
 object Main extends JSApp {
   def main(): Unit = {
@@ -142,15 +154,10 @@ xhr.send()
         <section>
             <h3>Cross building</h3>
             <pre class="fragment" data-fragment-index="1"><code class="scala" data-trim data-noescape style="max-height: none">
-scalaVersion in ThisBuild := "2.12.1"
-
 lazy val root = project.in(file("."))
-  .aggregate(client, server).
-  settings(
-    name := "scala-js-sample root"
-  )
+  .aggregate(client, server).settings(...)
 
-lazy val app = crossProject.in(file("./app")).
+lazy val app = crossProject.in(file(".")).
   settings(
     name := "scala-js-sample"
   ).jvmSettings(
@@ -158,9 +165,17 @@ lazy val app = crossProject.in(file("./app")).
   ).jsSettings(
     ...
   )
-
 lazy val client = app.js.settings()
 lazy val server = app.jvm.settings()
+            </code></pre>
+            <pre class="fragment" data-fragment-index="2"><code data-trim data-noescape style="max-height: none">
+.
+ +- jvm
+ |   +- src/main/scala
+ +- js
+ |   +- src/main/scala
+ +- shared
+     +- src/main/scala
             </code></pre>
         </section>
 
@@ -169,7 +184,9 @@ lazy val server = app.jvm.settings()
             <div class="fragment" data-fragment-index="1"><i>jsEnv</i></div>
             <div class="fragment" data-fragment-index="2"><i>test framework</i></div>
             <div class="fragment" data-fragment-index="3">
-                <pre><code class="scala">class SampleSpec extends FlatSpec with Matchers
+                <pre><code class="scala">import org.scalajs.dom.document
+
+class SampleSpec extends FlatSpec with Matchers
                     with BeforeAndAfterAll {
 
   override protected def beforeAll(): Unit = Application.main()
